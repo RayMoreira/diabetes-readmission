@@ -80,7 +80,7 @@ diabetes-readmission/
 
 ```bash
 # Clone and enter
-git clone https://github.com/<your-handle>/diabetes-readmission.git
+git clone https://github.com/RayMoreira/diabetes-readmission.git
 cd diabetes-readmission
 
 # Environment
