@@ -1,0 +1,41 @@
+# Dados (não versionados — baixar do UCI ML Repository, ver README)
+data/raw/
+data/interim/
+data/processed/
+*.csv
+!data/**/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Modelos serializados
+*.pkl
+*.joblib
+*.h5
+models/
+
+# Logs
+*.log
+logs/
