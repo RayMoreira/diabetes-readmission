@@ -117,4 +117,4 @@ jupyter lab
 
 ## Author
 
-**Rayele Moreira** — Physical therapist with a PhD in Biotechnology, focused on digital health and rehabilitation. [LinkedIn](https://www.linkedin.com/in/rayele-moreira)
+**Rayele Moreira** — **Rayele Moreira** — Data scientist working at the intersection of clinical care and machine learning. PhD in Biotechnology, with a clinical background in physical therapy and research focus on digital health and rehabilitation. [LinkedIn](https://www.linkedin.com/in/rayele-moreira)
