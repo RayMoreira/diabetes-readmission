@@ -1,23 +1,73 @@
-"""Feature engineering: agrupamento de códigos ICD-9 por sistema,
-binarização do target, derivação de variáveis clínicas agregadas.
-
-Preencher conforme o notebook 02_cleaning_feature_engineering avança.
+"""Feature engineering: ICD-9 chapter grouping, target binarization,
+and other clinical transformations.
 """
+from __future__ import annotations
+
 import pandas as pd
 
 
 def binarize_readmission(series: pd.Series) -> pd.Series:
-    """Converte o target original (3 classes) em binário.
+    """Convert the 3-class target into binary.
 
-    1 = readmissão em <30 dias (desfecho clínico de interesse)
-    0 = readmissão tardia (>30 dias) ou nenhuma readmissão
+    1 = readmission within 30 days (clinical outcome of interest)
+    0 = readmission after 30 days OR no readmission
     """
     return (series == "<30").astype(int)
 
 
-def group_icd9(code: str) -> str:
-    """Agrupa um código ICD-9 em categoria clínica (sistema/grupo).
+# ICD-9-CM chapter boundaries (numeric prefix → chapter name).
+# Source: official ICD-9-CM tabular list.
+# Special codes (V-codes for health-status factors, E-codes for external causes)
+# get their own categories.
+ICD9_CHAPTERS = [
+    (1, 139, "Infectious"),
+    (140, 239, "Neoplasms"),
+    (240, 279, "Endocrine"),         # includes 250.x diabetes
+    (280, 289, "Blood"),
+    (290, 319, "Mental"),
+    (320, 389, "Nervous"),
+    (390, 459, "Circulatory"),
+    (460, 519, "Respiratory"),
+    (520, 579, "Digestive"),
+    (580, 629, "Genitourinary"),
+    (630, 679, "Pregnancy"),
+    (680, 709, "Skin"),
+    (710, 739, "Musculoskeletal"),
+    (740, 759, "Congenital"),
+    (760, 779, "Perinatal"),
+    (780, 799, "Symptoms"),          # ill-defined conditions
+    (800, 999, "Injury"),
+]
 
-    Stub — implementar com a tabela oficial de capítulos do ICD-9-CM.
+
+def group_icd9(code: object) -> str:
+    """Map a single ICD-9 code (as stored in this dataset) to a clinical chapter.
+
+    The dataset stores codes as strings like "250.83", "428.0", "V58", "E885".
+    V-codes (factors influencing health status) and E-codes (external causes)
+    are grouped into their own categories.
     """
-    raise NotImplementedError("A implementar no notebook 02")
+    if pd.isna(code):
+        return "Missing"
+
+    code_str = str(code).strip()
+
+    # V-codes: factors influencing health status (e.g., V58 = aftercare)
+    if code_str.startswith("V"):
+        return "V_code"
+
+    # E-codes: external causes of injury (e.g., E885 = fall)
+    if code_str.startswith("E"):
+        return "E_code"
+
+    # Numeric codes: take the integer part before the decimal
+    try:
+        numeric = int(float(code_str))
+    except (ValueError, TypeError):
+        return "Unknown"
+
+    for low, high, chapter in ICD9_CHAPTERS:
+        if low <= numeric <= high:
+            return chapter
+
+    return "Unknown"
